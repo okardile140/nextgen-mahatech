@@ -2,7 +2,7 @@
 // Interactive sections opt into client rendering via "use client".
 
 import Hero from "../components/Hero";
-import TrustBar from "../components/TrustBar";
+// import TrustBar from "../components/TrustBar";
 import AMSHighlight from "../components/AMSHighlight";
 import About from "../components/About";
 import VisionMission from "../components/VisionMission";
@@ -11,7 +11,7 @@ import Process from "../components/Process";
 import Industries from "../components/Industries";
 import Testimonials from "../components/Testimonials";
 import CTA from "../components/CTA";
-import Contact from "../components/Contact";
+// import Contact from "../components/Contact";
 
 export const metadata = {
   title: "NextGen MahaTech — Association Management Solution & IT Services",

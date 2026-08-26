@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import PageBanner from "../../components/PageBanner";
 import IndustriesGrid from "../../components/industries/Grid";
 import IndustriesWhy from "../../components/industries/Why";
-import CTA from "../../components/CTA";
+// import CTA from "../../components/CTA";
 
 export const metadata: Metadata = {
   title: "Industries",

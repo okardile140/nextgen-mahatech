@@ -3,7 +3,7 @@ import PageBanner from "../../components/PageBanner";
 import ServicesGrid from "../../components/services/Grid";
 import ServicesProcess from "../../components/services/Process";
 import ServicesStack from "../../components/services/Stack";
-import CTA from "../../components/CTA";
+// import CTA from "../../components/CTA";
 
 export const metadata: Metadata = {
   title: "Services",

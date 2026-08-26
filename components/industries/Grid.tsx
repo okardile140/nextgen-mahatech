@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "motion/react";
-import { Flip3D, Reveal3D } from "../../lib/anim";
+import {  Reveal3D } from "../../lib/anim";
 
 const whyChooseUs = [
   {
@@ -36,16 +36,16 @@ const whyChooseUs = [
   },
 ];
 
-const platformBenefits = [
-  { name: "Reduce Manual Work", desc: "Automated processes save time and effort.", icon: "M12 2a3 3 0 013 3v1h4a2 2 0 012 2v11a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h4V5a3 3 0 013-3zm0 2a1 1 0 00-1 1v1h2V5a1 1 0 00-1-1zM7 11h10M7 15h6" },
-  { name: "Improve Communication", desc: "Better communication and participation.", icon: "M21 15a4 4 0 01-4 4H8l-5 3V7a4 4 0 014-4h10a4 4 0 014 4v8zM8 10h.01M12 10h.01M16 10h.01" },
-  { name: "Paperless Operations", desc: "Reduced paperwork and manual tasks.", icon: "M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6zm0 0v6h6M8 13h8M8 17h6" },
-  { name: "Faster Decision Making", desc: "Real-time reports for better decision making.", icon: "M3 3v18h18M7 16v-5M12 16V7M17 16v-8M5 21l16-18" },
-  { name: "Better Event Participation", desc: "Improved event communication and participation.", icon: "M3 5h18v16H3V5zM7 3v4M17 3v4M3 10h18M8 14h2M14 14h2M8 17h2" },
-  { name: "Transparent Management", desc: "Better visibility and transparent management.", icon: "M17 21v-2a4 4 0 00-4-4H7a4 4 0 00-4 4v2M10 11a4 4 0 100-8 4 4 0 000 8" },
-  { name: "Secure Digital Records", desc: "Cloud-based, secure and role-based access.", icon: "M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10zm-3-10l2 2 4-4" },
-  { name: "Scalable for Every Association", desc: "Designed to support growing association requirements.", icon: "M3 17l6-6 4 4 8-8M14 7h7v7M3 21h18" },
-];
+// const platformBenefits = [
+//   { name: "Reduce Manual Work", desc: "Automated processes save time and effort.", icon: "M12 2a3 3 0 013 3v1h4a2 2 0 012 2v11a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h4V5a3 3 0 013-3zm0 2a1 1 0 00-1 1v1h2V5a1 1 0 00-1-1zM7 11h10M7 15h6" },
+//   { name: "Improve Communication", desc: "Better communication and participation.", icon: "M21 15a4 4 0 01-4 4H8l-5 3V7a4 4 0 014-4h10a4 4 0 014 4v8zM8 10h.01M12 10h.01M16 10h.01" },
+//   { name: "Paperless Operations", desc: "Reduced paperwork and manual tasks.", icon: "M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6zm0 0v6h6M8 13h8M8 17h6" },
+//   { name: "Faster Decision Making", desc: "Real-time reports for better decision making.", icon: "M3 3v18h18M7 16v-5M12 16V7M17 16v-8M5 21l16-18" },
+//   { name: "Better Event Participation", desc: "Improved event communication and participation.", icon: "M3 5h18v16H3V5zM7 3v4M17 3v4M3 10h18M8 14h2M14 14h2M8 17h2" },
+//   { name: "Transparent Management", desc: "Better visibility and transparent management.", icon: "M17 21v-2a4 4 0 00-4-4H7a4 4 0 00-4 4v2M10 11a4 4 0 100-8 4 4 0 000 8" },
+//   { name: "Secure Digital Records", desc: "Cloud-based, secure and role-based access.", icon: "M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10zm-3-10l2 2 4-4" },
+//   { name: "Scalable for Every Association", desc: "Designed to support growing association requirements.", icon: "M3 17l6-6 4 4 8-8M14 7h7v7M3 21h18" },
+// ];
 
 const solutionDelivered = [
   "Complete Association Management System",
