@@ -2,10 +2,10 @@ import type { Metadata } from "next";
 import PageBanner from "../../components/PageBanner";
 import AboutValues from "../../components/about/Values";
 import AboutStory from "../../components/about/Story";
-import AboutTeam from "../../components/about/Team";
-import AboutTimeline from "../../components/about/Timeline";
+// import AboutTeam from "../../components/about/Team";
+// import AboutTimeline from "../../components/about/Timeline";
 import VisionMission from "../../components/VisionMission";
-import CTA from "../../components/CTA";
+// import CTA from "../../components/CTA";
 
 export const metadata: Metadata = {
   title: "About Us",
