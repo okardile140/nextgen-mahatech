@@ -21,7 +21,7 @@ const team = [
   {
     name: "Kailash Wagh",
     role: "Founder & Director",
-    image: "/kailash_Wagh.png",
+    image: "/Kailash_Wagh.png",
     tone: "from-fuchsia-500 to-pink-600",
     message:
       "As the Founder and Director of NextGen Maha Tech, I am excited to build next-generation, technology-driven solutions that simplify, strengthen, and enhance the way associations are managed.",
