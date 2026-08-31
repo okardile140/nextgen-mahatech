@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import PageBanner from "../../components/PageBanner";
 import AboutValues from "../../components/about/Values";
 import AboutStory from "../../components/about/Story";
-// import AboutTeam from "../../components/about/Team";
+import AboutTeam from "../../components/about/Team";
 // import AboutTimeline from "../../components/about/Timeline";
 import VisionMission from "../../components/VisionMission";
 // import CTA from "../../components/CTA";
@@ -26,8 +26,7 @@ export default function AboutPage() {
       <VisionMission/>
       <AboutValues />
       {/* <AboutTimeline /> */}
-      {/* <AboutTeam /> */}
-      
+      <AboutTeam />
     </>
   );
 }
