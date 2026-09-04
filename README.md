@@ -56,8 +56,7 @@ app/                          App Router — routes, layouts, API
 ├─ industries/page.tsx        /industries
 ├─ solutions/ams/page.tsx     /solutions/ams     Association Management Solution
 └─ api/                       Route Handlers
-   ├─ enquiries/route.ts         GET · POST
-   ├─ enquiries/[id]/route.ts    GET · PATCH · DELETE
+   ├─ enquiries/route.ts         POST (validate-only, no storage)
    ├─ services/route.ts          GET
    └─ testimonials/route.ts      GET
 
@@ -124,11 +123,7 @@ export default { plugins: { "@tailwindcss/postcss": {} } };
 
 | Method   | Endpoint              | Description                    |
 | -------- | --------------------- | ------------------------------ |
-| `GET`    | `/api/enquiries`      | List enquiries (newest first)  |
-| `POST`   | `/api/enquiries`      | Create enquiry from contact form |
-| `GET`    | `/api/enquiries/[id]` | Fetch one enquiry              |
-| `PATCH`  | `/api/enquiries/[id]` | Update enquiry status          |
-| `DELETE` | `/api/enquiries/[id]` | Delete enquiry                 |
+| `POST`   | `/api/enquiries`      | Validate contact-form payload (nothing stored — no admin panel) |
 | `GET`    | `/api/services`       | Service catalogue              |
 | `GET`    | `/api/testimonials`   | Published testimonials         |
 

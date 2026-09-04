@@ -1,10 +1,14 @@
 // Next.js App Router ROUTE HANDLER
-// POST /api/enquiries — create an enquiry from the contact form.
-// GET  /api/enquiries — list enquiries (admin).
+// POST /api/enquiries — validate the contact-form payload.
+//
+// NOTE: there is no admin panel and no enquiry storage. Submissions are
+// validated and acknowledged so the contact form UX keeps working, but
+// nothing is persisted. To receive enquiries, forward the validated payload
+// to an email service / CRM here (e.g. nodemailer, Resend) instead of
+// re-introducing a database store.
 
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-import prisma from "../../../lib/prisma";
 
 export const dynamic = "force-dynamic";
 
@@ -31,35 +35,6 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  try {
-    const d = parsed.data;
-    const enquiry = await prisma.enquiry.create({
-      data: {
-        fullName: d.fullName,
-        company: d.company ? d.company : null,
-        email: d.email.toLowerCase().trim(),
-        phone: d.phone ? d.phone : null,
-        service: d.service ? d.service : null,
-        message: d.message ? d.message : null,
-      },
-    });
-    return NextResponse.json({ success: true, data: enquiry, error: null });
-  } catch {
-    return NextResponse.json(
-      { success: false, data: null, error: "Could not save your enquiry. Please try again." },
-      { status: 500 }
-    );
-  }
-}
-
-export async function GET() {
-  try {
-    const enquiries = await prisma.enquiry.findMany({
-      orderBy: { createdAt: "desc" },
-      take: 100,
-    });
-    return NextResponse.json({ success: true, data: enquiries, error: null });
-  } catch {
-    return NextResponse.json({ success: false, data: [], error: "Unavailable" });
-  }
+  // TODO: send `parsed.data` via email/CRM if you want to receive enquiries.
+  return NextResponse.json({ success: true, data: null, error: null });
 }
