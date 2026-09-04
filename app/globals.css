@@ -40,6 +40,23 @@ body {
   animation-delay: -2.5s;
 }
 
+/* Testimonial marquee — seamless infinite horizontal scroll.
+   The track holds an even number of identical sets and slides -50%,
+   so the loop point is invisible. Duration is set inline per item count
+   to keep a constant scroll speed. */
+@keyframes marquee {
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-marquee {
+  animation-name: marquee;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+  will-change: transform;
+}
+
 /* Smooth scrollbar */
 ::-webkit-scrollbar {
   width: 10px;
