@@ -152,7 +152,11 @@ function FloatingChip({ className = "", icon, label, tone, dz = 80 }: { classNam
       animate={{ y: [0, -12, 0], rotateX: [2, -3, 2], rotateY: [-4, 4, -4], z: [0, dz, 0] }}
       transition={{ duration: 5.5, repeat: Infinity, ease: "easeInOut" }}
     >
-      <div className={`flex items-center gap-2 rounded-2xl bg-gradient-to-br ${tone} px-3.5 py-2.5 shadow-xl shadow-black/30 backdrop-blur border border-white/20`}>
+      {/* Opaque gradient chips: no backdrop-blur here — blurring behind an
+          opaque element only forces the browser to re-sample the live WebGL
+          framebuffer underneath every frame (a known flicker/stutter source)
+          with zero visual benefit. */}
+      <div className={`flex items-center gap-2 rounded-2xl bg-gradient-to-br ${tone} px-3.5 py-2.5 shadow-xl shadow-black/30 border border-white/20`}>
         <svg className="h-4 w-4 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
           {icons[icon]}
         </svg>

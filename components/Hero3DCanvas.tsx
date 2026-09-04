@@ -6,13 +6,15 @@ import * as THREE from "three";
 /**
  * Hero3DCanvas — interactive WebGL holographic globe.
  *
- * Hardened against the usual "canvas is invisible" failure modes:
- *  - Waits for the container to have a real size (ResizeObserver) instead of
- *    reading clientWidth/Height once on mount, which is 0 during hydration.
- *  - Absolutely positions the canvas so it fills the parent regardless of
- *    intrinsic sizing.
- *  - Detects WebGL failure and falls back to a CSS hologram.
- *  - Respects prefers-reduced-motion.
+ * Performance-hardened so it can't overwhelm weak GPUs / display drivers
+ * (which shows up as whole-screen flickering on some machines):
+ *  - Requests the low-power (integrated) GPU instead of forcing a discrete-
+ *    GPU switch — a classic source of display flicker on dual-GPU laptops.
+ *  - No MSAA (`antialias: false`) and pixel ratio capped at 1.5.
+ *  - Render loop throttled to ~30fps and paused whenever the hero is
+ *    off-screen (IntersectionObserver) or the tab is hidden.
+ *  - `prefers-reduced-motion` renders a single static frame; `?no3d=1` in the
+ *    URL (or any WebGL failure / context loss) falls back to a CSS hologram.
  */
 export default function Hero3DCanvas() {
   const mountRef = useRef<HTMLDivElement>(null);
@@ -23,13 +25,24 @@ export default function Hero3DCanvas() {
     const container = mountRef.current;
     if (!container) return;
 
+    // Emergency kill-switch: ?no3d=1 renders the lightweight CSS fallback.
+    try {
+      const params = new URLSearchParams(window.location.search);
+      if (params.get("no3d") === "1" || params.get("static") === "1") {
+        setFailed(true);
+        return;
+      }
+    } catch {
+      /* URL parsing never blocks rendering */
+    }
+
     // ---- WebGL capability check -------------------------------------------
     let renderer: THREE.WebGLRenderer;
     try {
       renderer = new THREE.WebGLRenderer({
         alpha: true,
-        antialias: true,
-        powerPreference: "high-performance",
+        antialias: false,
+        powerPreference: "low-power",
       });
     } catch {
       setFailed(true);
@@ -43,7 +56,8 @@ export default function Hero3DCanvas() {
     const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 100);
     camera.position.z = 5.4;
 
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    // Cap resolution: full devicePixelRatio with MSAA is what melts weak GPUs.
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.5));
     renderer.setClearColor(0x000000, 0);
 
     const canvas = renderer.domElement;
@@ -158,19 +172,56 @@ export default function Hero3DCanvas() {
     ring2.rotation.set(Math.PI / 6, Math.PI / 4, 0);
     group.add(ring2);
 
-    // ---- Sizing ------------------------------------------------------------
-    const resize = () => {
+    // ---- Shared teardown ----------------------------------------------------
+    const disposeScene = () => {
+      scene.traverse((obj) => {
+        const mesh = obj as THREE.Mesh;
+        mesh.geometry?.dispose?.();
+        const mat = mesh.material as THREE.Material | THREE.Material[];
+        if (Array.isArray(mat)) mat.forEach((m) => m.dispose());
+        else mat?.dispose?.();
+      });
+      pointTex.dispose();
+      renderer.dispose();
+      if (canvas.parentNode === container) container.removeChild(canvas);
+    };
+
+    const fitToContainer = () => {
       const w = container.clientWidth;
       const h = container.clientHeight;
-      if (w === 0 || h === 0) return;
+      if (w === 0 || h === 0) return false;
       camera.aspect = w / h;
       camera.updateProjectionMatrix();
       renderer.setSize(w, h, false);
+      return true;
     };
 
-    const ro = new ResizeObserver(resize);
+    // ---- Reduced motion: one static frame, no animation loop ----------------
+    if (reduced) {
+      group.rotation.set(0.15, 0.6, 0);
+      const renderStatic = () => {
+        if (!fitToContainer()) return;
+        try {
+          renderer.render(scene, camera);
+        } catch {
+          setFailed(true);
+        }
+      };
+      const roStatic = new ResizeObserver(renderStatic);
+      roStatic.observe(container);
+      renderStatic();
+      return () => {
+        roStatic.disconnect();
+        disposeScene();
+      };
+    }
+
+    // ---- Sizing ------------------------------------------------------------
+    const ro = new ResizeObserver(() => {
+      fitToContainer();
+    });
     ro.observe(container);
-    resize();
+    fitToContainer();
 
     // ---- Pointer interaction ----------------------------------------------
     let targetX = 0;
@@ -216,51 +267,93 @@ export default function Hero3DCanvas() {
     window.addEventListener("pointermove", onPointerMove);
     window.addEventListener("pointerup", onPointerUp);
 
-    // ---- Render loop -------------------------------------------------------
+    // ---- Render loop: throttled + visibility-aware --------------------------
     let raf = 0;
+    let lastFrame = 0;
+    let isVisible = true;
+    const FRAME_MS = 1000 / 30; // ~30fps is plenty for an ambient visual
     const clock = new THREE.Clock();
 
-    const tick = () => {
-      raf = requestAnimationFrame(tick);
+    const draw = () => {
       const t = clock.getElapsedTime();
 
       curX += (targetX - curX) * 0.06;
       curY += (targetY - curY) * 0.06;
 
-      const spin = reduced ? 0 : t * 0.26;
-      group.rotation.x = curX + (reduced ? 0 : Math.sin(t * 0.35) * 0.14);
-      group.rotation.y = curY + spin;
+      group.rotation.x = curX + Math.sin(t * 0.35) * 0.14;
+      group.rotation.y = curY + t * 0.26;
 
-      if (!reduced) {
-        ring1.rotation.z = t * 0.45;
-        ring2.rotation.z = -t * 0.38;
-        coreSphere.rotation.y = -t * 0.55;
-        const pulse = 1 + Math.sin(t * 1.6) * 0.02;
-        wireSphere.scale.setScalar(pulse);
-      }
+      ring1.rotation.z = t * 0.45;
+      ring2.rotation.z = -t * 0.38;
+      coreSphere.rotation.y = -t * 0.55;
+      wireSphere.scale.setScalar(1 + Math.sin(t * 1.6) * 0.02);
 
       renderer.render(scene, camera);
     };
-    tick();
+
+    const start = () => {
+      if (raf) return;
+      lastFrame = performance.now();
+      raf = requestAnimationFrame(tick);
+    };
+    const stop = () => {
+      if (raf) cancelAnimationFrame(raf);
+      raf = 0;
+    };
+
+    const tick = (now: number) => {
+      raf = requestAnimationFrame(tick);
+      if (now - lastFrame < FRAME_MS) return; // throttle: skip excess frames
+      lastFrame = now;
+      try {
+        draw();
+      } catch {
+        // GPU context died mid-frame — stop and show the CSS fallback.
+        stop();
+        setFailed(true);
+      }
+    };
+
+    const syncRunning = () => {
+      if (isVisible && document.visibilityState === "visible") start();
+      else stop();
+    };
+
+    // Pause when the hero scrolls out of view…
+    const io = new IntersectionObserver(
+      (entries) => {
+        isVisible = entries[0]?.isIntersecting ?? true;
+        syncRunning();
+      },
+      { threshold: 0.02 }
+    );
+    io.observe(container);
+
+    // …and when the tab is hidden.
+    const onVisibilityChange = () => syncRunning();
+    document.addEventListener("visibilitychange", onVisibilityChange);
+
+    // If the driver kills our GL context, fall back instead of glitching.
+    const onContextLost = (e: Event) => {
+      e.preventDefault();
+      stop();
+      setFailed(true);
+    };
+    canvas.addEventListener("webglcontextlost", onContextLost);
+
+    start();
 
     // ---- Cleanup -----------------------------------------------------------
     return () => {
-      cancelAnimationFrame(raf);
+      stop();
+      io.disconnect();
       ro.disconnect();
+      document.removeEventListener("visibilitychange", onVisibilityChange);
+      canvas.removeEventListener("webglcontextlost", onContextLost);
       container.removeEventListener("pointerdown", onPointerDown);
       window.removeEventListener("pointermove", onPointerMove);
       window.removeEventListener("pointerup", onPointerUp);
-
-      scene.traverse((obj) => {
-        const mesh = obj as THREE.Mesh;
-        mesh.geometry?.dispose?.();
-        const mat = mesh.material as THREE.Material | THREE.Material[];
-        if (Array.isArray(mat)) mat.forEach((m) => m.dispose());
-        else mat?.dispose?.();
-      });
-      pointTex.dispose();
-      renderer.dispose();
-      if (canvas.parentNode === container) container.removeChild(canvas);
+      disposeScene();
     };
   }, []);
 
