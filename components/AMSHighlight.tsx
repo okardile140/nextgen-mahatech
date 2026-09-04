@@ -89,6 +89,8 @@ export default function AMSHighlight() {
           </Reveal3D>
 
           <Reveal3D delay={0.15}>
+            {/* Module tiles link to the AMS product page */}
+            <a href="/solutions/ams" className="block" aria-label="Explore the AMS product">
             <div className="grid grid-cols-4 gap-3" style={{ perspective: 1400 }}>
               {modules.map((m, i) => (
                 <motion.div
@@ -109,6 +111,7 @@ export default function AMSHighlight() {
                 </motion.div>
               ))}
             </div>
+            </a>
             <div className="mt-4 rounded-2xl border border-slate-200 bg-white p-4 shadow-lg text-center">
               <div className="text-xs font-semibold uppercase tracking-widest text-slate-500">
                 One platform. All solutions.

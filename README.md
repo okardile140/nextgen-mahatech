@@ -57,7 +57,12 @@ app/                          App Router — routes, layouts, API
 ├─ solutions/ams/page.tsx     /solutions/ams     Association Management Solution
 └─ api/                       Route Handlers
    ├─ enquiries/route.ts         POST (validate-only, no storage)
-   ├─ services/route.ts          GET
+   ├─ services/route.ts          GET · POST
+   ├─ services/[id]/route.ts     GET · PATCH · DELETE
+   ├─ portfolio/route.ts         GET · POST
+   ├─ portfolio/[id]/route.ts    GET · PATCH · DELETE
+   ├─ ams-features/route.ts      GET · POST
+   ├─ ams-features/[id]/route.ts GET · PATCH · DELETE
    └─ testimonials/route.ts      GET
 
 components/                   Server by default; interactive ones use "use client"
@@ -123,11 +128,34 @@ export default { plugins: { "@tailwindcss/postcss": {} } };
 
 | Method   | Endpoint              | Description                    |
 | -------- | --------------------- | ------------------------------ |
-| `POST`   | `/api/enquiries`      | Validate contact-form payload (nothing stored — no admin panel) |
+| `POST`   | `/api/enquiries`      | Validate contact-form payload (nothing stored) |
+| `GET`    | `/api/services`       | List active services (`?all=1` incl. hidden — admin) |
+| `POST`   | `/api/services`       | Create a service (admin)       |
+| `GET`/`PATCH`/`DELETE` | `/api/services/[id]` | Read, update, delete one service (admin) |
+| `GET`    | `/api/portfolio`      | List active portfolio items (`?all=1` incl. hidden — admin) |
+| `POST`   | `/api/portfolio`      | Create a portfolio item (admin) |
+| `GET`/`PATCH`/`DELETE` | `/api/portfolio/[id]` | Read, update, delete one item (admin) |
+| `GET`    | `/api/ams-features`   | List AMS product features      |
+| `POST`   | `/api/ams-features`   | Create an AMS feature (admin)  |
+| `GET`/`PATCH`/`DELETE` | `/api/ams-features/[id]` | Read, update, delete one feature (admin) |
 | `GET`    | `/api/services`       | Service catalogue              |
 | `GET`    | `/api/testimonials`   | Published testimonials         |
 
 ---
+
+## Admin panel
+
+Open **`/admin`** (passcode gate — default `admin123`, override with
+`NEXT_PUBLIC_ADMIN_KEY` in `.env`). From there you can **add, edit and
+delete**:
+
+- **Services** → shown on `/services` and the home page cards
+- **Portfolio** → shown in the showcase on `/portfolio`
+- **AMS Features** → shown in the features grid on `/solutions/ams`
+
+Edits go live instantly. In this preview the store is in-memory, so changes
+reset when the server restarts — connect PostgreSQL (`DATABASE_URL` +
+`npx prisma migrate dev`) for permanent storage.
 
 ## Contact
 

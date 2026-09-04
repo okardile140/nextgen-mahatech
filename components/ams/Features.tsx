@@ -1,10 +1,39 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { motion } from "motion/react";
 import { Reveal3D, Tilt } from "../../lib/anim";
-import { amsFeatures, amsIcons } from "../../lib/ams-data";
+import { amsFeatures as staticFeatures, amsIcons } from "../../lib/ams-data";
+
+type FeatureRow = { key: string; title: string; desc: string; icon: string; tone: string };
+
+const normalize = (rows: any[]): FeatureRow[] =>
+  rows.map((f, i) => ({
+    key: String(f.id ?? f.t ?? i),
+    title: String(f.title ?? f.t ?? ""),
+    desc: String(f.description ?? f.d ?? ""),
+    icon: String(f.icon ?? "settings"),
+    tone: String(f.tone ?? "from-indigo-500 to-blue-600"),
+  }));
 
 export default function AMSFeatures() {
+  const [features, setFeatures] = useState<FeatureRow[]>(() => normalize(staticFeatures));
+
+  useEffect(() => {
+    let active = true;
+    fetch("/api/ams-features")
+      .then((r) => r.json())
+      .then((res) => {
+        if (active && Array.isArray(res?.data) && res.data.length > 0) {
+          setFeatures(normalize(res.data));
+        }
+      })
+      .catch(() => {});
+    return () => {
+      active = false;
+    };
+  }, []);
+
   return (
     <section id="ams-features" className="py-24 md:py-32 bg-slate-50">
       <div className="mx-auto max-w-7xl px-5 md:px-8">
@@ -25,9 +54,9 @@ export default function AMSFeatures() {
         </Reveal3D>
 
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5" style={{ perspective: 1400 }}>
-          {amsFeatures.map((f, i) => (
+          {features.map((f, i) => (
             <motion.div
-              key={f.t}
+              key={f.key}
               className="h-full"
               initial={{ opacity: 0, y: 50, rotateX: 25, scale: 0.9 }}
               whileInView={{ opacity: 1, y: 0, rotateX: 0, scale: 1 }}
@@ -38,11 +67,11 @@ export default function AMSFeatures() {
                 <div className="h-full rounded-2xl bg-white border border-slate-200/70 p-6 hover:border-transparent hover:shadow-2xl hover:shadow-indigo-500/10 transition-all">
                   <div className={`h-12 w-12 rounded-xl bg-gradient-to-br ${f.tone} flex items-center justify-center shadow-lg`}>
                     <svg className="h-6 w-6 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
-                      {amsIcons[f.icon]}
+                      {amsIcons[f.icon] ?? amsIcons.settings}
                     </svg>
                   </div>
-                  <h4 className="mt-5 font-bold text-slate-900">{f.t}</h4>
-                  <p className="mt-1.5 text-sm text-slate-600 leading-relaxed">{f.d}</p>
+                  <h4 className="mt-5 font-bold text-slate-900">{f.title}</h4>
+                  <p className="mt-1.5 text-sm text-slate-600 leading-relaxed">{f.desc}</p>
                 </div>
               </Tilt>
             </motion.div>

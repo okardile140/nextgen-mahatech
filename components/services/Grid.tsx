@@ -1,10 +1,47 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { motion } from "motion/react";
 import { Tilt, Reveal3D } from "../../lib/anim";
-import { serviceDetails, serviceIcons } from "../../lib/services-data";
+import { serviceDetails as staticServices, serviceIcons, type ServiceDetail } from "../../lib/services-data";
+
+type ApiService = ServiceDetail & { id?: string; active?: boolean; sortOrder?: number };
 
 export default function ServicesGrid() {
+  const [services, setServices] = useState<ApiService[]>(staticServices);
+
+  useEffect(() => {
+    let active = true;
+    fetch("/api/services")
+      .then((r) => r.json())
+      .then((res) => {
+        if (!active) return;
+        if (Array.isArray(res?.data) && res.data.length > 0) {
+          const rows = (res.data as ApiService[])
+            .filter((s) => s.active !== false)
+            .map((s) => ({
+              slug: s.slug,
+              title: s.title,
+              tagline: s.tagline ?? "",
+              description: s.description ?? "",
+              longDescription: s.longDescription ?? s.description ?? "",
+              icon: s.icon ?? "code",
+              tone: s.tone ?? "from-indigo-500 to-blue-600",
+              features: Array.isArray(s.features) ? s.features : [],
+              deliverables: Array.isArray(s.deliverables) ? s.deliverables : [],
+              id: s.id,
+              active: s.active,
+              sortOrder: s.sortOrder,
+            }));
+          setServices(rows);
+        }
+      })
+      .catch(() => {});
+    return () => {
+      active = false;
+    };
+  }, []);
+
   return (
     <section className="py-24 md:py-32 bg-white">
       <div className="mx-auto max-w-7xl px-5 md:px-8">
@@ -18,7 +55,7 @@ export default function ServicesGrid() {
         </Reveal3D>
 
         <div className="space-y-6">
-          {serviceDetails.map((s, i) => (
+          {services.map((s, i) => (
             <motion.div
               key={s.slug}
               initial={{ opacity: 0, y: 60, rotateX: 20, scale: 0.96 }}
@@ -30,7 +67,7 @@ export default function ServicesGrid() {
                 <div className={`rounded-3xl border border-slate-200/70 bg-gradient-to-br from-white to-slate-50 p-6 md:p-10 hover:shadow-2xl hover:shadow-indigo-500/10 transition-all ${i % 2 ? "md:flex-row-reverse" : ""} md:flex gap-8 items-start`}>
                   <div className={`shrink-0 h-14 w-14 md:h-16 md:w-16 rounded-2xl bg-gradient-to-br ${s.tone} flex items-center justify-center shadow-lg`}>
                     <svg className="h-7 w-7 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
-                      {serviceIcons[s.icon]}
+                      {serviceIcons[s.icon] ?? serviceIcons.code}
                     </svg>
                   </div>
 

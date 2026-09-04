@@ -92,6 +92,42 @@ export const services = [
   // },
 ];
 
+export const portfolioItems = [
+  {
+    id: "pf-nima-ams",
+    title: "NIMA Association Management System",
+    category: "Association Platform",
+    description:
+      "Complete digital ecosystem for Nashik Industries & Manufacturers Association — member directory, events, renewals, payments and push notifications across mobile and web.",
+    image: null,
+    link: null,
+    active: true,
+    sortOrder: 1,
+  },
+  {
+    id: "pf-corporate-web",
+    title: "Corporate Website & Booking Platform",
+    category: "Web Development",
+    description:
+      "High-performing corporate site with online booking, CMS-driven content and SEO foundations that turn visitors into customers.",
+    image: null,
+    link: null,
+    active: true,
+    sortOrder: 2,
+  },
+  {
+    id: "pf-erp-retail",
+    title: "Retail ERP & Inventory Suite",
+    category: "ERP / CRM",
+    description:
+      "Integrated billing, inventory and reporting suite deployed across multiple retail branches with role-based access.",
+    image: null,
+    link: null,
+    active: true,
+    sortOrder: 3,
+  },
+];
+
 export const testimonials = [
   {
     id: "t1",

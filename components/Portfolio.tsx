@@ -196,8 +196,16 @@ export default function Portfolio() {
           </div>
         </motion.div>
 
-        {/* Closing */}
-       
+        {/* Link to the full Portfolio page */}
+        <div className="mt-16 text-center">
+          <a href="/portfolio" className="inline-flex items-center gap-2 rounded-full bg-slate-900 px-7 py-3.5 text-sm font-semibold text-white shadow-lg transition-all hover:-translate-y-0.5 hover:bg-slate-800">
+            View Full Portfolio
+            <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round">
+              <path d="M5 12h14M13 5l7 7-7 7" />
+            </svg>
+          </a>
+        </div>
+
       </div>
     </section>
   );

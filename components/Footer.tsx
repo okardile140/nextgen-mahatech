@@ -48,7 +48,7 @@ export default function Footer() {
                 { l: "About Us", h: "/about" },
                 { l: "Services", h: "/services" },
                 { l: "Portfolio", h: "/portfolio" },
-                { l: "Contact", h: "/#contact" },
+                { l: "Contact", h: "/contact" },
               ].map((s) => (
                 <li key={s.l}>
                   <Link href={s.h} className="text-slate-400 hover:text-white transition">{s.l}</Link>
@@ -98,6 +98,7 @@ export default function Footer() {
             <a href="#" className="hover:text-white transition">Privacy Policy</a>
             <a href="#" className="hover:text-white transition">Terms of Service</a>
             <a href="#" className="hover:text-white transition">Sitemap</a>
+            <a href="/admin" className="hover:text-white transition">Admin</a>
           </div>
         </div>
       </div>

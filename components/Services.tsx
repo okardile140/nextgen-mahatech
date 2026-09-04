@@ -69,7 +69,9 @@ export default function Services() {
     fetch("/api/services")
       .then((r) => r.json())
       .then((res) => {
-        if (active) setServices(Array.isArray(res?.data) ? res.data : fallback);
+        if (!active) return;
+        const rows = Array.isArray(res?.data) ? res.data : fallback;
+        setServices(rows.filter((s: ServiceItem) => s.active !== false));
       })
       .catch(() => active && setServices(fallback));
     return () => {
@@ -107,13 +109,14 @@ export default function Services() {
               transition={{ duration: 0.6, delay: i * 0.08 }}
             >
               <Tilt max={12} className="h-full">
-                <div className="group h-full rounded-2xl bg-white border border-slate-200/70 p-6 hover:border-transparent hover:shadow-2xl hover:shadow-indigo-500/10 transition-all">
+                {/* Every card links to the full Services page */}
+                <a href="/services" className="group block h-full rounded-2xl bg-white border border-slate-200/70 p-6 hover:border-transparent hover:shadow-2xl hover:shadow-indigo-500/10 transition-all">
                   <div className={`h-12 w-12 rounded-xl bg-gradient-to-br ${tones[i % tones.length]} flex items-center justify-center shadow-lg ring-4 ring-transparent group-hover:ring-indigo-100 transition-all`}>
                     <svg className="h-6 w-6 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
-                      {iconPaths[s.icon ?? "code"]}
+                      {iconPaths[s.icon ?? "code"] ?? iconPaths.code}
                     </svg>
                   </div>
-                  <h3 className="mt-5 font-bold text-slate-900 text-lg leading-snug">{s.title}</h3>
+                  <h3 className="mt-5 font-bold text-slate-900 text-lg leading-snug group-hover:text-indigo-700 transition-colors">{s.title}</h3>
                   {s.tagline && (
                     <div className="mt-1 text-xs font-semibold uppercase tracking-wider text-indigo-600">{s.tagline}</div>
                   )}
@@ -124,10 +127,19 @@ export default function Services() {
                       <path d="M5 12h14M13 5l7 7-7 7" />
                     </svg>
                   </div>
-                </div>
+                </a>
               </Tilt>
             </motion.div>
           ))}
+        </div>
+
+        <div className="mt-12 text-center">
+          <a href="/services" className="inline-flex items-center gap-2 rounded-full bg-slate-900 px-7 py-3.5 text-sm font-semibold text-white shadow-lg transition-all hover:-translate-y-0.5 hover:bg-slate-800">
+            View All Services
+            <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round">
+              <path d="M5 12h14M13 5l7 7-7 7" />
+            </svg>
+          </a>
         </div>
       </div>
     </section>

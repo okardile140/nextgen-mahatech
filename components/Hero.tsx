@@ -77,13 +77,13 @@ export default function Hero() {
             </p>
           
             <div className="mt-10 flex flex-wrap items-center gap-4">
-              <a href="#contact" className="group inline-flex items-center gap-2 rounded-full bg-white px-7 py-3.5 text-sm font-semibold text-slate-900 shadow-xl hover:shadow-2xl hover:-translate-y-0.5 transition-all">
+              <a href="/contact" className="group inline-flex items-center gap-2 rounded-full bg-white px-7 py-3.5 text-sm font-semibold text-slate-900 shadow-xl hover:shadow-2xl hover:-translate-y-0.5 transition-all">
                 Start Your Project
                 <svg className="h-4 w-4 group-hover:translate-x-1 transition-transform" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round">
                   <path d="M5 12h14M13 5l7 7-7 7" />
                 </svg>
               </a>
-              <a href="#services" className="inline-flex items-center gap-2 rounded-full border border-white/30 bg-white/10 backdrop-blur px-7 py-3.5 text-sm font-semibold text-white hover:bg-white/20 transition">
+              <a href="/services" className="inline-flex items-center gap-2 rounded-full border border-white/30 bg-white/10 backdrop-blur px-7 py-3.5 text-sm font-semibold text-white hover:bg-white/20 transition">
                 Explore Services
               </a>
             </div>

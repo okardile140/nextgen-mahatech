@@ -23,19 +23,59 @@ datasource db {
 // Services — rendered on the site
 // ---------------------------------------------------------------------------
 model Service {
+  id              String   @id @default(cuid())
+  slug            String   @unique
+  title           String
+  tagline         String?
+  description     String
+  longDescription String?  @map("long_description")
+  icon            String?
+  tone            String?
+  features        String[] @default([])
+  deliverables    String[] @default([])
+  active          Boolean  @default(true)
+  sortOrder       Int      @default(0) @map("sort_order")
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  @@index([active, sortOrder])
+  @@map("services")
+}
+
+// ---------------------------------------------------------------------------
+// Portfolio — admin-managed showcase items rendered on /portfolio
+// ---------------------------------------------------------------------------
+model Portfolio {
   id          String   @id @default(cuid())
-  slug        String   @unique
   title       String
-  tagline     String?
+  category    String?
   description String
-  icon        String?
+  image       String?
+  link        String?
   active      Boolean  @default(true)
   sortOrder   Int      @default(0) @map("sort_order")
   createdAt   DateTime @default(now()) @map("created_at")
   updatedAt   DateTime @updatedAt @map("updated_at")
 
   @@index([active, sortOrder])
-  @@map("services")
+  @@map("portfolio_items")
+}
+
+// ---------------------------------------------------------------------------
+// AMS features — admin-managed cards rendered on /solutions/ams
+// ---------------------------------------------------------------------------
+model AmsFeature {
+  id          String   @id @default(cuid())
+  title       String
+  description String
+  icon        String?
+  tone        String?
+  sortOrder   Int      @default(0) @map("sort_order")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  @@index([sortOrder])
+  @@map("ams_features")
 }
 
 // ---------------------------------------------------------------------------

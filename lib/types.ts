@@ -6,8 +6,32 @@ export type ServiceItem = {
   title: string;
   tagline: string | null;
   description: string;
+  longDescription?: string | null;
   icon: string | null;
+  tone?: string | null;
+  features?: string[];
+  deliverables?: string[];
   active?: boolean;
+  sortOrder?: number;
+};
+
+export type PortfolioItem = {
+  id: string;
+  title: string;
+  category: string | null;
+  description: string;
+  image: string | null;
+  link: string | null;
+  active?: boolean;
+  sortOrder?: number;
+};
+
+export type AmsFeature = {
+  id: string;
+  title: string;
+  description: string;
+  icon: string | null;
+  tone: string | null;
   sortOrder?: number;
 };
 

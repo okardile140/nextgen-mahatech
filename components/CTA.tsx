@@ -33,7 +33,7 @@ export default function CTA() {
             </div>
             <div className="flex flex-col sm:flex-row lg:flex-col gap-4 lg:items-stretch" style={{ perspective: 900 }}>
               <motion.a
-                href="#contact"
+                href="/contact"
                 className="inline-flex items-center justify-center gap-2 rounded-full bg-white px-7 py-4 text-sm font-semibold text-slate-900 shadow-xl"
                 whileHover={{ y: -6, rotateX: 12, scale: 1.03 }}
                 whileTap={{ scale: 0.97 }}

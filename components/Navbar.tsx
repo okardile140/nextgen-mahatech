@@ -71,7 +71,7 @@ export default function Navbar() {
           {/* CTA */}
           <div className="hidden lg:flex items-center gap-3">
             <Link
-              href="/#contact"
+              href="/contact"
               className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-indigo-600 to-blue-600 px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-indigo-500/30 hover:shadow-indigo-500/50 hover:-translate-y-0.5 transition-all"
             >
               Get a Quote
@@ -134,7 +134,7 @@ export default function Navbar() {
               ))}
 
               <Link
-                href="/#contact"
+                href="/contact"
                 onClick={() => setOpen(false)}
                 className="mt-2 mx-4 text-center rounded-full bg-gradient-to-r from-indigo-600 to-blue-600 px-5 py-2.5 text-sm font-semibold text-white shadow-lg"
               >
