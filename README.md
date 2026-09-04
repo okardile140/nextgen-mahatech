@@ -63,7 +63,8 @@ app/                          App Router — routes, layouts, API
    ├─ portfolio/[id]/route.ts    GET · PATCH · DELETE
    ├─ ams-features/route.ts      GET · POST
    ├─ ams-features/[id]/route.ts GET · PATCH · DELETE
-   └─ testimonials/route.ts      GET
+   ├─ testimonials/route.ts      GET · POST
+   └─ testimonials/[id]/route.ts GET · PATCH · DELETE
 
 components/                   Server by default; interactive ones use "use client"
 ├─ Navbar · Footer · Hero · Hero3DCanvas · About · Services · Process
@@ -138,6 +139,9 @@ export default { plugins: { "@tailwindcss/postcss": {} } };
 | `GET`    | `/api/ams-features`   | List AMS product features      |
 | `POST`   | `/api/ams-features`   | Create an AMS feature (admin)  |
 | `GET`/`PATCH`/`DELETE` | `/api/ams-features/[id]` | Read, update, delete one feature (admin) |
+| `GET`    | `/api/testimonials`   | List active testimonials (`?all=1` incl. hidden — admin) |
+| `POST`   | `/api/testimonials`   | Create a testimonial (admin) |
+| `GET`/`PATCH`/`DELETE` | `/api/testimonials/[id]` | Read, update, delete one testimonial (admin) |
 | `GET`    | `/api/services`       | Service catalogue              |
 | `GET`    | `/api/testimonials`   | Published testimonials         |
 
@@ -152,6 +156,7 @@ delete**:
 - **Services** → shown on `/services` and the home page cards
 - **Portfolio** → shown in the showcase on `/portfolio`
 - **AMS Features** → shown in the features grid on `/solutions/ams`
+- **Testimonials** → shown in the client-stories section on the home page
 
 Edits go live instantly. In this preview the store is in-memory, so changes
 reset when the server restarts — connect PostgreSQL (`DATABASE_URL` +

@@ -88,9 +88,10 @@ model Testimonial {
   quote   String
   rating  Int      @default(5)
   active  Boolean  @default(true)
+  sortOrder Int    @default(0) @map("sort_order")
   createdAt DateTime @default(now()) @map("created_at")
 
-  @@index([active])
+  @@index([active, sortOrder])
   @@map("testimonials")
 }
 

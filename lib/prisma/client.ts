@@ -293,12 +293,84 @@ class AmsFeatureQuery {
 }
 
 // ---------------------------------------------------------------------------
-// Testimonials + posts (read-only seeds, unchanged)
+// Testimonials — admin-managed client stories (mutable, full CRUD)
 // ---------------------------------------------------------------------------
+type TestimonialRow = {
+  id: string;
+  client: string;
+  role: string | null;
+  quote: string;
+  rating: number;
+  active: boolean;
+  sortOrder: number;
+  createdAt: Date;
+  updatedAt: Date;
+};
+
+const testimonialRows: TestimonialRow[] = testimonials.map((t, i) => ({
+  id: t.id,
+  client: t.client,
+  role: t.role ?? null,
+  quote: t.quote,
+  rating: t.rating,
+  active: true,
+  sortOrder: i + 1,
+  createdAt: now(),
+  updatedAt: now(),
+}));
+
 class TestimonialQuery {
-  findMany(args?: { where?: { active?: boolean }; orderBy?: unknown }): Promise<any[]> {
-    void args;
-    return Promise.resolve(testimonials.map((t) => ({ ...t, active: true })));
+  async findMany(args?: { where?: { active?: boolean } }): Promise<TestimonialRow[]> {
+    const rows =
+      args?.where?.active === undefined
+        ? [...testimonialRows]
+        : testimonialRows.filter((r) => r.active === args.where!.active);
+    return rows.sort(bySort);
+  }
+  async findUnique(args: { where: { id: string } }): Promise<TestimonialRow | null> {
+    return testimonialRows.find((r) => r.id === args.where.id) ?? null;
+  }
+  async create(args: {
+    data: Partial<TestimonialRow> & { client: string; quote: string };
+  }): Promise<TestimonialRow> {
+    const d = args.data;
+    const rating = Math.min(5, Math.max(1, Math.round(Number(d.rating) || 5)));
+    const row: TestimonialRow = {
+      id: uid("tm"),
+      client: String(d.client).trim(),
+      role: d.role?.trim() ? String(d.role) : null,
+      quote: String(d.quote ?? "").trim(),
+      rating,
+      active: d.active !== false,
+      sortOrder:
+        typeof d.sortOrder === "number" && Number.isFinite(d.sortOrder)
+          ? d.sortOrder
+          : testimonialRows.length + 1,
+      createdAt: now(),
+      updatedAt: now(),
+    };
+    testimonialRows.push(row);
+    return row;
+  }
+  async update(args: { where: { id: string }; data: Partial<TestimonialRow> }): Promise<TestimonialRow> {
+    const row = testimonialRows.find((r) => r.id === args.where.id);
+    if (!row) throw new Error(`Testimonial ${args.where.id} not found`);
+    const d = args.data;
+    if (d.client !== undefined && String(d.client).trim()) row.client = String(d.client).trim();
+    if (d.role !== undefined) row.role = String(d.role).trim() || null;
+    if (d.quote !== undefined) row.quote = String(d.quote);
+    if (d.rating !== undefined) row.rating = Math.min(5, Math.max(1, Math.round(Number(d.rating) || row.rating)));
+    if (d.active !== undefined) row.active = d.active !== false;
+    if (d.sortOrder !== undefined && Number.isFinite(Number(d.sortOrder)))
+      row.sortOrder = Number(d.sortOrder);
+    row.updatedAt = now();
+    return row;
+  }
+  async delete(args: { where: { id: string } }): Promise<TestimonialRow> {
+    const idx = testimonialRows.findIndex((r) => r.id === args.where.id);
+    if (idx === -1) throw new Error(`Testimonial ${args.where.id} not found`);
+    const [removed] = testimonialRows.splice(idx, 1);
+    return removed;
   }
 }
 

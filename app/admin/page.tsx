@@ -13,12 +13,13 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 const ADMIN_KEY = process.env.NEXT_PUBLIC_ADMIN_KEY || "admin123";
 const SESSION_FLAG = "ngmt-admin-auth";
 
-type Tab = "services" | "portfolio" | "ams";
+type Tab = "services" | "portfolio" | "ams" | "testimonials";
 
 const TABS: { id: Tab; label: string; endpoint: string; singular: string; viewAll: string }[] = [
   { id: "services", label: "Services", endpoint: "/api/services", singular: "service", viewAll: "/services" },
   { id: "portfolio", label: "Portfolio", endpoint: "/api/portfolio", singular: "portfolio item", viewAll: "/portfolio" },
   { id: "ams", label: "AMS Features", endpoint: "/api/ams-features", singular: "feature", viewAll: "/solutions/ams#ams-features" },
+  { id: "testimonials", label: "Testimonials", endpoint: "/api/testimonials", singular: "testimonial", viewAll: "/#testimonials" },
 ];
 
 const TONES = [
@@ -76,18 +77,36 @@ const FIELDS: Record<Tab, Field[]> = {
     { name: "tone", label: "Colour theme", kind: "select", options: TONES },
     { name: "sortOrder", label: "Sort order", kind: "number" },
   ],
+  testimonials: [
+    { name: "client", label: "Client name", kind: "text", required: true, max: 120, placeholder: "e.g. Rahul Deshmukh" },
+    { name: "role", label: "Role / company", kind: "text", max: 160, placeholder: "e.g. CEO, Retail Chain (Nashik)" },
+    { name: "quote", label: "Testimonial quote", kind: "textarea", rows: 4, max: 2000 },
+    { name: "rating", label: "Star rating", kind: "select", options: ["5", "4", "3", "2", "1"] },
+    { name: "sortOrder", label: "Sort order", kind: "number" },
+    { name: "active", label: "Visible on site", kind: "checkbox" },
+  ],
 };
 
-const TITLE_MAX: Record<Tab, number> = { services: 120, portfolio: 140, ams: 140 };
+const TITLE_MAX: Record<Tab, number> = { services: 120, portfolio: 140, ams: 140, testimonials: 120 };
 
 const isUrlOrPath = (v: string) => !v || v.startsWith("/") || /^https?:\/\/.+\..+/.test(v);
 
 function validateForm(tab: Tab, form: Record<string, any>): Record<string, string> {
   const errs: Record<string, string> = {};
-  const title = String(form.title ?? "").trim();
-  if (!title) errs.title = "Title is required.";
-  else if (title.length < 2) errs.title = "Title needs at least 2 characters.";
-  else if (title.length > TITLE_MAX[tab]) errs.title = `Title must be under ${TITLE_MAX[tab]} characters.`;
+  // Services/portfolio/AMS use "title"; testimonials use "client" as the name.
+  const nameKey = tab === "testimonials" ? "client" : "title";
+  const nameLabel = tab === "testimonials" ? "Client name" : "Title";
+  const name = String(form[nameKey] ?? "").trim();
+  if (!name) errs[nameKey] = `${nameLabel} is required.`;
+  else if (name.length < 2) errs[nameKey] = `${nameLabel} needs at least 2 characters.`;
+  else if (name.length > TITLE_MAX[tab]) errs[nameKey] = `${nameLabel} must be under ${TITLE_MAX[tab]} characters.`;
+
+  if (tab === "testimonials") {
+    const quote = String(form.quote ?? "").trim();
+    if (quote.length < 10) errs.quote = "Quote needs at least 10 characters.";
+    const rating = Number(form.rating);
+    if (!Number.isInteger(rating) || rating < 1 || rating > 5) errs.rating = "Rating must be between 1 and 5.";
+  }
 
   for (const f of FIELDS[tab]) {
     const v = String(form[f.name] ?? "");
@@ -112,7 +131,8 @@ const toForm = (tab: Tab, item?: any): Record<string, any> => {
   for (const f of FIELDS[tab]) {
     if (f.kind === "checkbox") form[f.name] = item ? item[f.name] !== false : true;
     else if (f.kind === "number") form[f.name] = item?.[f.name] ?? "";
-    else if (f.kind === "select") form[f.name] = item?.[f.name] ?? f.options[0];
+    else if (f.kind === "select")
+      form[f.name] = item?.[f.name] !== undefined && item?.[f.name] !== null ? String(item[f.name]) : f.options[0];
     else if (f.name === "features" || f.name === "deliverables")
       form[f.name] = Array.isArray(item?.[f.name]) ? item[f.name].join("\n") : item?.[f.name] ?? "";
     else form[f.name] = item?.[f.name] ?? "";
@@ -505,7 +525,7 @@ export default function AdminPage() {
                 <li key={item.id} className="flex items-center justify-between gap-4 p-4 md:px-6 hover:bg-slate-50 transition">
                   <div className="min-w-0">
                     <div className="flex items-center gap-2 flex-wrap">
-                      <span className="font-semibold text-slate-900 truncate max-w-[40vw]">{item.title}</span>
+                      <span className="font-semibold text-slate-900 truncate max-w-[40vw]">{item.title ?? item.client}</span>
                       {tab !== "ams" && (
                         <span className={`text-[11px] font-semibold px-2 py-0.5 rounded-full ${item.active !== false ? "bg-emerald-100 text-emerald-700" : "bg-slate-200 text-slate-500"}`}>
                           {item.active !== false ? "Live" : "Hidden"}
@@ -513,8 +533,8 @@ export default function AdminPage() {
                       )}
                       {item.category && <span className="text-[11px] text-slate-500 truncate">{item.category}</span>}
                     </div>
-                    {(item.tagline || item.description) && (
-                      <p className="mt-0.5 text-sm text-slate-500 truncate max-w-[60vw]">{item.tagline || item.description}</p>
+                    {(item.tagline || item.description || item.role || item.quote) && (
+                      <p className="mt-0.5 text-sm text-slate-500 truncate max-w-[60vw]">{item.tagline || item.description || item.role || item.quote}</p>
                     )}
                     {item.updatedAt && <p className="mt-0.5 text-[11px] text-slate-400">Updated {fmtDate(item.updatedAt)}</p>}
                   </div>
@@ -550,7 +570,7 @@ export default function AdminPage() {
           <div className="w-full max-w-sm rounded-3xl bg-white p-6 shadow-2xl" onClick={(e) => e.stopPropagation()}>
             <h3 className="text-lg font-bold text-slate-900">Delete this {meta.singular}?</h3>
             <p className="mt-2 text-sm text-slate-600 break-words">
-              “{deleting.title}” will be removed from the website immediately. This cannot be undone.
+              “{deleting.title ?? deleting.client}” will be removed from the website immediately. This cannot be undone.
             </p>
             <div className="mt-5 flex gap-3 justify-end">
               <button onClick={() => setDeleting(null)} disabled={deletingBusy} className="rounded-full border border-slate-300 px-5 py-2 text-sm font-semibold text-slate-600 hover:border-slate-400 transition disabled:opacity-50">
