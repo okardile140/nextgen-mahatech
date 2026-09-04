@@ -62,7 +62,9 @@ const fallback: ServiceItem[] = [
 ];
 
 export default function Services() {
-  const [services, setServices] = useState<ServiceItem[]>([]);
+  // Static seeds render instantly (SEO + no empty shell); replaced by exact
+  // live API data on success, static fallback only on error.
+  const [services, setServices] = useState<ServiceItem[]>(fallback);
 
   useEffect(() => {
     let active = true;
@@ -70,14 +72,20 @@ export default function Services() {
       .then((r) => r.json())
       .then((res) => {
         if (!active) return;
-        const rows = Array.isArray(res?.data) ? res.data : fallback;
-        setServices(rows.filter((s: ServiceItem) => s.active !== false));
+        if (Array.isArray(res?.data)) {
+          setServices((res.data as ServiceItem[]).filter((s) => s.active !== false));
+        } else {
+          setServices(fallback);
+        }
       })
       .catch(() => active && setServices(fallback));
     return () => {
       active = false;
     };
   }, []);
+
+  // Nothing live to show → hide the section instead of an empty shell.
+  if (services.length === 0) return null;
 
   return (
     <section id="services" className="py-24 md:py-32 bg-white">
@@ -99,7 +107,7 @@ export default function Services() {
         </div>
 
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5" style={{ perspective: 1200 }}>
-          {services.map((s, i) => (
+          {(services ?? []).map((s, i) => (
             <motion.div
               key={s.id}
               className="h-full"
@@ -110,18 +118,21 @@ export default function Services() {
             >
               <Tilt max={12} className="h-full">
                 {/* Every card links to the full Services page */}
-                <a href="/services" className="group block h-full rounded-2xl bg-white border border-slate-200/70 p-6 hover:border-transparent hover:shadow-2xl hover:shadow-indigo-500/10 transition-all">
-                  <div className={`h-12 w-12 rounded-xl bg-gradient-to-br ${tones[i % tones.length]} flex items-center justify-center shadow-lg ring-4 ring-transparent group-hover:ring-indigo-100 transition-all`}>
+                <a href="/services" className="group flex h-full min-h-[240px] flex-col rounded-2xl bg-white border border-slate-200/70 p-6 hover:border-transparent hover:shadow-2xl hover:shadow-indigo-500/10 transition-all">
+                  <div className={`h-12 w-12 shrink-0 rounded-xl bg-gradient-to-br ${tones[i % tones.length]} flex items-center justify-center shadow-lg ring-4 ring-transparent group-hover:ring-indigo-100 transition-all`}>
                     <svg className="h-6 w-6 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
                       {iconPaths[s.icon ?? "code"] ?? iconPaths.code}
                     </svg>
                   </div>
-                  <h3 className="mt-5 font-bold text-slate-900 text-lg leading-snug group-hover:text-indigo-700 transition-colors">{s.title}</h3>
-                  {s.tagline && (
-                    <div className="mt-1 text-xs font-semibold uppercase tracking-wider text-indigo-600">{s.tagline}</div>
+                  {/* Clamped + break-words: any admin text length keeps card shape */}
+                  <h3 className="mt-5 font-bold text-slate-900 text-lg leading-snug line-clamp-2 break-words group-hover:text-indigo-700 transition-colors">{s.title}</h3>
+                  {s.tagline ? (
+                    <div className="mt-1 text-xs font-semibold uppercase tracking-wider text-indigo-600 line-clamp-1 break-words">{s.tagline}</div>
+                  ) : (
+                    <div className="mt-1 text-xs font-semibold uppercase tracking-wider text-transparent select-none">—</div>
                   )}
-                  <p className="mt-2 text-sm text-slate-600 leading-relaxed">{s.description}</p>
-                  <div className="mt-5 flex items-center gap-1.5 text-sm font-semibold text-indigo-600 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <p className="mt-2 text-sm text-slate-600 leading-relaxed line-clamp-3 break-words">{s.description}</p>
+                  <div className="mt-auto flex items-center gap-1.5 pt-5 text-sm font-semibold text-indigo-600 opacity-0 group-hover:opacity-100 transition-opacity">
                     Learn more
                     <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round">
                       <path d="M5 12h14M13 5l7 7-7 7" />

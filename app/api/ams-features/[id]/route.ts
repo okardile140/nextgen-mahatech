@@ -6,6 +6,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "../../../../lib/prisma";
 import { amsFeatureSchema } from "../route";
+import { invalid } from "../../services/route";
 
 const partialSchema = amsFeatureSchema.partial();
 
@@ -23,15 +24,9 @@ export async function GET(_req: NextRequest, { params }: Ctx) {
 export async function PATCH(req: NextRequest, { params }: Ctx) {
   const { id } = await params;
   const body = await req.json().catch(() => null);
-  const parsed = partialSchema.safeParse(body);
-  if (!parsed.success) {
-    return NextResponse.json(
-      { success: false, data: null, error: parsed.error.issues[0]?.message ?? "Invalid payload" },
-      { status: 422 }
-    );
-  }
+  const { data: d, response } = invalid(body, partialSchema);
+  if (!d) return response;
   try {
-    const d = parsed.data;
     const feature = await prisma.amsFeature.update({
       where: { id },
       data: {
@@ -43,7 +38,8 @@ export async function PATCH(req: NextRequest, { params }: Ctx) {
       },
     });
     return NextResponse.json({ success: true, data: feature, error: null });
-  } catch {
+  } catch (e) {
+    console.error(`PATCH /api/ams-features/${id} failed:`, e);
     return NextResponse.json({ success: false, data: null, error: "Feature not found" }, { status: 404 });
   }
 }
@@ -53,7 +49,8 @@ export async function DELETE(_req: NextRequest, { params }: Ctx) {
   try {
     const feature = await prisma.amsFeature.delete({ where: { id } });
     return NextResponse.json({ success: true, data: feature, error: null });
-  } catch {
+  } catch (e) {
+    console.error(`DELETE /api/ams-features/${id} failed:`, e);
     return NextResponse.json({ success: false, data: null, error: "Feature not found" }, { status: 404 });
   }
 }

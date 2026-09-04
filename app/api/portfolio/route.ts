@@ -6,17 +6,30 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import prisma from "../../../lib/prisma";
+import { invalid } from "../services/route";
 
 export const dynamic = "force-dynamic";
 
+// Accepts absolute https URLs or site-relative paths (e.g. /work/acme.png).
+const urlOrPath = (label: string) =>
+  z
+    .string()
+    .trim()
+    .max(500, `${label} is too long`)
+    .optional()
+    .or(z.literal(""))
+    .refine((v) => !v || v.startsWith("/") || /^https?:\/\/.+\..+/.test(v), {
+      message: `${label} must be a full https:// URL or a site path like /image.png`,
+    });
+
 export const portfolioSchema = z.object({
-  title: z.string().trim().min(2).max(140),
-  category: z.string().trim().max(120).optional().or(z.literal("")),
-  description: z.string().trim().max(4000).optional().or(z.literal("")),
-  image: z.string().trim().max(500).optional().or(z.literal("")),
-  link: z.string().trim().max(500).optional().or(z.literal("")),
-  active: z.boolean().optional(),
-  sortOrder: z.coerce.number().int().optional(),
+  title: z.string().trim().min(2, "Title needs at least 2 characters").max(140, "Title must be under 140 characters"),
+  category: z.string().trim().max(120, "Category must be under 120 characters").optional().or(z.literal("")),
+  description: z.string().trim().max(4000, "Description must be under 4000 characters").optional().or(z.literal("")),
+  image: urlOrPath("Image URL"),
+  link: urlOrPath("Project link"),
+  active: z.boolean({ error: "Visible must be true or false" }).optional(),
+  sortOrder: z.coerce.number().int("Order must be a whole number").min(0, "Order can't be negative").max(9999, "Order must be under 10000").optional(),
 });
 
 export async function GET(req: NextRequest) {
@@ -34,15 +47,9 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   const body = await req.json().catch(() => null);
-  const parsed = portfolioSchema.safeParse(body);
-  if (!parsed.success) {
-    return NextResponse.json(
-      { success: false, data: null, error: parsed.error.issues[0]?.message ?? "Invalid payload" },
-      { status: 422 }
-    );
-  }
+  const { data: d, response } = invalid(body, portfolioSchema);
+  if (!d) return response;
   try {
-    const d = parsed.data;
     const item = await prisma.portfolio.create({
       data: {
         title: d.title,
@@ -55,9 +62,10 @@ export async function POST(req: NextRequest) {
       },
     });
     return NextResponse.json({ success: true, data: item, error: null }, { status: 201 });
-  } catch {
+  } catch (e) {
+    console.error("POST /api/portfolio failed:", e);
     return NextResponse.json(
-      { success: false, data: null, error: "Could not create portfolio item." },
+      { success: false, data: null, error: "Could not create portfolio item. Please try again." },
       { status: 500 }
     );
   }
