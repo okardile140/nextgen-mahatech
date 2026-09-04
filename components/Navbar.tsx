@@ -9,7 +9,7 @@ const links: { label: string; href: string }[] = [
   { label: "About", href: "/about" },
   { label: "AMS Product", href: "/solutions/ams" },
   { label: "Services", href: "/services" },
-  { label: "Portfolios", href: "/industries" },
+  { label: "Portfolios", href: "/portfolio" },
   { label: "Contact", href: "/contact" },
 ];
 

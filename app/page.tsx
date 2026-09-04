@@ -8,7 +8,7 @@ import About from "../components/About";
 import VisionMission from "../components/VisionMission";
 import Services from "../components/Services";
 import Process from "../components/Process";
-import Industries from "../components/Industries";
+import Portfolio from "../components/Portfolio";
 import Testimonials from "../components/Testimonials";
 import CTA from "../components/CTA";
 // import Contact from "../components/Contact";
@@ -28,7 +28,7 @@ export default function HomePage() {
       <VisionMission />
       <Services />
       <Process />
-      <Industries />
+      <Portfolio />
       <Testimonials />
       <CTA />
      

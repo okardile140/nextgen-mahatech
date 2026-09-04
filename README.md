@@ -53,7 +53,7 @@ app/                          App Router — routes, layouts, API
 ├─ error.tsx                  Error boundary
 ├─ about/page.tsx             /about
 ├─ services/page.tsx          /services
-├─ industries/page.tsx        /industries
+├─ portfolio/page.tsx         /portfolio
 ├─ solutions/ams/page.tsx     /solutions/ams     Association Management Solution
 └─ api/                       Route Handlers
    ├─ enquiries/route.ts         POST (validate-only, no storage)
@@ -62,11 +62,11 @@ app/                          App Router — routes, layouts, API
 
 components/                   Server by default; interactive ones use "use client"
 ├─ Navbar · Footer · Hero · Hero3DCanvas · About · Services · Process
-├─ Industries · Testimonials · CTA · Contact · TrustBar · PageBanner
+├─ Portfolio · Testimonials · CTA · Contact · TrustBar · PageBanner
 ├─ AMSHighlight · VisionMission
 ├─ about/       Story · Values · Team · Timeline
 ├─ services/    Grid · Process · Stack
-├─ industries/  Grid · Why
+├─ portfolio/   Grid · Why
 ├─ ams/         Hero · Metrics · Challenges · Benefits · Features · Why
 │               Slogan
 └─ ui/          AppLink

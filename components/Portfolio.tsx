@@ -38,7 +38,7 @@ const achievements = [
   },
 ];
 
-export default function Industries() {
+export default function Portfolio() {
   return (
     <section
       id="success-story"

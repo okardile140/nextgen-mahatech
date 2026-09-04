@@ -17,7 +17,7 @@ const icons: Record<string, React.ReactNode> = {
   target: <><circle cx="12" cy="12" r="10" /><circle cx="12" cy="12" r="6" /><circle cx="12" cy="12" r="2" /></>,
 };
 
-export default function IndustriesWhy() {
+export default function PortfolioWhy() {
   return (
     <section className="py-24 md:py-32 bg-slate-50">
       <div className="mx-auto max-w-7xl px-5 md:px-8">

@@ -47,7 +47,7 @@ export default function Footer() {
               {[
                 { l: "About Us", h: "/about" },
                 { l: "Services", h: "/services" },
-                { l: "Portfolio", h: "/industries" },
+                { l: "Portfolio", h: "/portfolio" },
                 { l: "Contact", h: "/#contact" },
               ].map((s) => (
                 <li key={s.l}>

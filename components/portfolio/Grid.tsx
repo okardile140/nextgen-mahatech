@@ -76,7 +76,7 @@ const whyNimaChose = [
   "Trusted technology partner for the long term",
 ];
 
-export default function IndustriesGrid() {
+export default function PortfolioGrid() {
   return (
     <section id="solutions" className="relative overflow-hidden bg-white py-24 md:py-32">
       <div className="absolute left-0 top-1/4 h-96 w-96 rounded-full bg-indigo-50 blur-3xl" />
