@@ -35,6 +35,22 @@ export type AmsFeature = {
   sortOrder?: number;
 };
 
+export type TeamMember = {
+  id: string;
+  name: string;
+  role: string | null;
+  image: string | null;
+  tone: string | null;
+  message: string;
+  quote: string | null;
+  extendedMessage?: string | null;
+  vision?: string | null;
+  leadership?: string | null;
+  closing?: string | null;
+  active?: boolean;
+  sortOrder?: number;
+};
+
 export type TestimonialItem = {
   id: string;
   client: string;

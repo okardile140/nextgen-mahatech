@@ -2,42 +2,68 @@
 "use client";
 
 import Image from "next/image";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { motion } from "motion/react";
 import { Reveal3D } from "../../lib/anim";
+import { teamMembers as staticTeam } from "../../lib/seed-data";
+import type { TeamMember } from "../../lib/types";
 
-const team = [
-  {
-    name: "Rohit Pawar",
-    role: "Founder & Director",
-    image: "/Rohit_Pawar.png",
-    tone: "from-indigo-500 to-blue-600",
-    message:
-      "Rohit Pawar is the Director of NextGen Mahatech, focused on driving business growth through innovation, technology, and strategic partnerships. With an entrepreneurial mindset and a passion for digital transformation, he is committed to delivering practical and innovative solutions that create long-term value for clients and businesses.",
-    quote:
-      "Innovation, Technology & Growth — Building Solutions for a Better Future.",
-  },
+const initials = (name: string) =>
+  name.trim().split(/\s+/).map((n) => n[0]).slice(0, 2).join("").toUpperCase() || "?";
 
-  {
-    name: "Kailash Wagh",
-    role: "Founder & Director",
-    image: "/Kailash.png",
-    tone: "from-fuchsia-500 to-pink-600",
-    message:
-      "As the Founder and Director of NextGen Maha Tech, I am excited to build next-generation, technology-driven solutions that simplify, strengthen, and enhance the way associations are managed.",
-    extendedMessage:
-      "At NextGen Maha Tech we focus on creating innovative, smart, and scalable Association Management Solutions tailored to the evolving needs of modern organizations. Our mission is to empower associations with technology that streamlines operations, boosts member engagement, improves communication, and facilitates better decision-making.",
-    vision:
-      "I believe that technology’s role goes beyond merely automating processes—it should also foster meaningful relationships and create new opportunities for growth. With this vision, we have developed a future-ready platform that integrates digital innovation, operational efficiency, and user-centric design.",
-    leadership:
-      "As a leader, I am dedicated to driving innovation, building strong partnerships, and delivering solutions that provide real, measurable value to our clients. Our goal is to establish NextGen Maha Tech as a trusted technology partner for associations looking to embrace digital transformation and prepare for the future.",
-    closing:
-      "We are not just building software; we are shaping the next generation of association management.",
-  },
-];
+function TeamPhoto({ member, index }: { member: TeamMember; index: number }) {
+  const [broken, setBroken] = useState(false);
+  const src = member.image?.trim() ?? "";
+
+  // No photo (or a broken URL) → initials tile in the same fixed box,
+  // so card alignment never shifts no matter what the admin saves.
+  if (!src || broken) {
+    return (
+      <div className={`relative mx-auto mt-8 h-[280px] w-full max-w-[280px] overflow-hidden rounded-2xl bg-gradient-to-br ${member.tone ?? "from-indigo-500 to-blue-600"} flex items-center justify-center`}>
+        <span className="text-7xl font-bold text-white/80">{initials(member.name)}</span>
+      </div>
+    );
+  }
+
+  const remote = src.startsWith("http");
+  return (
+    <div className="relative mx-auto mt-8 h-[280px] w-full max-w-[280px] overflow-hidden rounded-2xl bg-slate-100">
+      <Image
+        src={src}
+        alt={member.name}
+        fill
+        sizes="280px"
+        className="object-cover object-top"
+        priority={index === 0}
+        unoptimized={remote}
+        onError={() => setBroken(true)}
+      />
+    </div>
+  );
+}
 
 export default function AboutTeam() {
-  const [expanded, setExpanded] = useState<number | null>(null);
+  // Static seeds render instantly (no layout shift); replaced by exact live data on success.
+  const [team, setTeam] = useState<TeamMember[]>(staticTeam);
+  const [expanded, setExpanded] = useState<string | null>(null);
+
+  useEffect(() => {
+    let active = true;
+    fetch("/api/team")
+      .then((r) => r.json())
+      .then((res) => {
+        if (active && Array.isArray(res?.data)) {
+          setTeam((res.data as TeamMember[]).filter((m) => (m as any).active !== false));
+        }
+      })
+      .catch(() => {});
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  // Nothing live to show → hide the section instead of an empty shell.
+  if (team.length === 0) return null;
 
   return (
     <section className="relative overflow-hidden bg-white py-24 md:py-32">
@@ -76,11 +102,12 @@ export default function AboutTeam() {
 
           {team.map((member, index) => {
 
-            const isExpanded = expanded === index;
+            const key = member.id ?? member.name;
+            const isExpanded = expanded === key;
 
             return (
               <motion.article
-                key={member.name}
+                key={key}
                 initial={{
                   opacity: 0,
                   y: 30,
@@ -95,7 +122,7 @@ export default function AboutTeam() {
                 }}
                 transition={{
                   duration: 0.55,
-                  delay: index * 0.1,
+                  delay: Math.min(index, 6) * 0.1,
                 }}
                 className="flex h-full flex-col"
               >
@@ -105,33 +132,26 @@ export default function AboutTeam() {
 
                   {/* Top accent */}
                   <div
-                    className={`h-1.5 w-full shrink-0 bg-gradient-to-r ${member.tone}`}
+                    className={`h-1.5 w-full shrink-0 bg-gradient-to-r ${member.tone ?? "from-indigo-500 to-blue-600"}`}
                   />
 
-{/* Profile Image */}
-<div className="relative mx-auto mt-8 h-[280px] w-full max-w-[280px] overflow-hidden rounded-2xl bg-slate-100">
-  <Image
-    src={member.image}
-    alt={member.name}
-    fill
-    sizes="280px"
-    className="object-cover object-top"
-    priority={index === 0}
-  />
-</div>
-
-
+                  {/* Profile Image */}
+                  <TeamPhoto member={member} index={index} />
 
                   {/* PROFILE */}
                   <div className="shrink-0 px-7 pt-7 text-center">
 
-                    <h3 className="text-2xl font-bold tracking-tight text-slate-900">
+                    <h3 className="text-2xl font-bold tracking-tight text-slate-900 break-words">
                       {member.name}
                     </h3>
 
-                    <div className="mt-2 inline-flex rounded-full bg-indigo-50 px-4 py-1.5 text-sm font-semibold text-indigo-600">
-                      {member.role}
-                    </div>
+                    {member.role ? (
+                      <div className="mt-2 inline-flex rounded-full bg-indigo-50 px-4 py-1.5 text-sm font-semibold text-indigo-600 break-words">
+                        {member.role}
+                      </div>
+                    ) : (
+                      <div className="mt-2 select-none text-sm text-transparent">—</div>
+                    )}
 
                   </div>
 
@@ -144,22 +164,22 @@ export default function AboutTeam() {
                       <div className="absolute left-0 top-0 h-full w-1 rounded-full bg-gradient-to-b from-indigo-500 to-cyan-500" />
 
                       {/* Main message */}
-                      <p className="text-sm leading-7 text-slate-600">
+                      <p className="text-sm leading-7 text-slate-600 break-words">
                         {member.message}
                       </p>
 
-                      {/* ROHIT */}
+                      {/* Quote */}
                       {member.quote && (
                         <div className="mt-5 border-t border-slate-200 pt-5">
 
-                          <p className="text-sm font-semibold italic leading-6 text-indigo-700">
+                          <p className="text-sm font-semibold italic leading-6 text-indigo-700 break-words">
                             “{member.quote}”
                           </p>
 
                         </div>
                       )}
 
-                      {/* KAILASH */}
+                      {/* Extended story */}
                       {member.extendedMessage && (
 
                         <>
@@ -168,25 +188,31 @@ export default function AboutTeam() {
                           {isExpanded && (
                             <div className="mt-5 space-y-4 border-t border-slate-200 pt-5">
 
-                              <p className="text-sm leading-7 text-slate-600">
+                              <p className="text-sm leading-7 text-slate-600 break-words">
                                 {member.extendedMessage}
                               </p>
 
-                              <p className="text-sm leading-7 text-slate-600">
-                                {member.vision}
-                              </p>
-
-                              <p className="text-sm leading-7 text-slate-600">
-                                {member.leadership}
-                              </p>
-
-                              <div className="rounded-xl bg-white p-4">
-
-                                <p className="text-sm font-semibold italic leading-6 text-indigo-700">
-                                  “{member.closing}”
+                              {member.vision && (
+                                <p className="text-sm leading-7 text-slate-600 break-words">
+                                  {member.vision}
                                 </p>
+                              )}
 
-                              </div>
+                              {member.leadership && (
+                                <p className="text-sm leading-7 text-slate-600 break-words">
+                                  {member.leadership}
+                                </p>
+                              )}
+
+                              {member.closing && (
+                                <div className="rounded-xl bg-white p-4">
+
+                                  <p className="text-sm font-semibold italic leading-6 text-indigo-700 break-words">
+                                    “{member.closing}”
+                                  </p>
+
+                                </div>
+                              )}
 
                             </div>
                           )}
@@ -198,7 +224,7 @@ export default function AboutTeam() {
                               type="button"
                               onClick={() =>
                                 setExpanded(
-                                  isExpanded ? null : index
+                                  isExpanded ? null : key
                                 )
                               }
                               className="inline-flex items-center gap-2 rounded-full bg-indigo-600 px-5 py-2.5 text-sm font-semibold text-white transition-colors duration-200 hover:bg-indigo-700"
@@ -240,7 +266,7 @@ export default function AboutTeam() {
 
                   {/* Bottom accent */}
                   <div
-                    className={`h-1 w-full shrink-0 bg-gradient-to-r ${member.tone}`}
+                    className={`h-1 w-full shrink-0 bg-gradient-to-r ${member.tone ?? "from-indigo-500 to-blue-600"}`}
                   />
 
                 </div>

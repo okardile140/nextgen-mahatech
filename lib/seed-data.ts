@@ -128,6 +128,44 @@ export const portfolioItems = [
   },
 ];
 
+export const teamMembers = [
+  {
+    id: "tm-rohit-pawar",
+    name: "Rohit Pawar",
+    role: "Founder & Director",
+    image: "/Rohit_Pawar.png",
+    tone: "from-indigo-500 to-blue-600",
+    message:
+      "Rohit Pawar is the Director of NextGen Mahatech, focused on driving business growth through innovation, technology, and strategic partnerships. With an entrepreneurial mindset and a passion for digital transformation, he is committed to delivering practical and innovative solutions that create long-term value for clients and businesses.",
+    quote: "Innovation, Technology & Growth — Building Solutions for a Better Future.",
+    extendedMessage: null,
+    vision: null,
+    leadership: null,
+    closing: null,
+    active: true,
+    sortOrder: 1,
+  },
+  {
+    id: "tm-kailash-wagh",
+    name: "Kailash Wagh",
+    role: "Founder & Director",
+    image: "/Kailash.png",
+    tone: "from-fuchsia-500 to-pink-600",
+    message:
+      "As the Founder and Director of NextGen Maha Tech, I am excited to build next-generation, technology-driven solutions that simplify, strengthen, and enhance the way associations are managed.",
+    quote: null,
+    extendedMessage:
+      "At NextGen Maha Tech we focus on creating innovative, smart, and scalable Association Management Solutions tailored to the evolving needs of modern organizations. Our mission is to empower associations with technology that streamlines operations, boosts member engagement, improves communication, and facilitates better decision-making.",
+    vision:
+      "I believe that technology’s role goes beyond merely automating processes—it should also foster meaningful relationships and create new opportunities for growth. With this vision, we have developed a future-ready platform that integrates digital innovation, operational efficiency, and user-centric design.",
+    leadership:
+      "As a leader, I am dedicated to driving innovation, building strong partnerships, and delivering solutions that provide real, measurable value to our clients. Our goal is to establish NextGen Maha Tech as a trusted technology partner for associations looking to embrace digital transformation and prepare for the future.",
+    closing: "We are not just building software; we are shaping the next generation of association management.",
+    active: true,
+    sortOrder: 2,
+  },
+];
+
 export const testimonials = [
   {
     id: "t1",

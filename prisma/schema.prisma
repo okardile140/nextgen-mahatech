@@ -96,6 +96,30 @@ model Testimonial {
 }
 
 // ---------------------------------------------------------------------------
+// Team members — admin-managed leadership cards rendered on /about
+// ---------------------------------------------------------------------------
+model TeamMember {
+  id              String   @id @default(cuid())
+  name            String
+  role            String?
+  image           String?
+  tone            String?
+  message         String
+  quote           String?
+  extendedMessage String?  @map("extended_message")
+  vision          String?
+  leadership      String?
+  closing         String?
+  active          Boolean  @default(true)
+  sortOrder       Int      @default(0) @map("sort_order")
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  @@index([active, sortOrder])
+  @@map("team_members")
+}
+
+// ---------------------------------------------------------------------------
 // Blog / Insights — optional content posts
 // ---------------------------------------------------------------------------
 model Post {

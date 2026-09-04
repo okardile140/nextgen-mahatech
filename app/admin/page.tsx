@@ -13,13 +13,14 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 const ADMIN_KEY = process.env.NEXT_PUBLIC_ADMIN_KEY || "admin123";
 const SESSION_FLAG = "ngmt-admin-auth";
 
-type Tab = "services" | "portfolio" | "ams" | "testimonials";
+type Tab = "services" | "portfolio" | "ams" | "testimonials" | "team";
 
 const TABS: { id: Tab; label: string; endpoint: string; singular: string; viewAll: string }[] = [
   { id: "services", label: "Services", endpoint: "/api/services", singular: "service", viewAll: "/services" },
   { id: "portfolio", label: "Portfolio", endpoint: "/api/portfolio", singular: "portfolio item", viewAll: "/portfolio" },
   { id: "ams", label: "AMS Features", endpoint: "/api/ams-features", singular: "feature", viewAll: "/solutions/ams#ams-features" },
   { id: "testimonials", label: "Testimonials", endpoint: "/api/testimonials", singular: "testimonial", viewAll: "/#testimonials" },
+  { id: "team", label: "Team", endpoint: "/api/team", singular: "team member", viewAll: "/about" },
 ];
 
 const TONES = [
@@ -85,17 +86,27 @@ const FIELDS: Record<Tab, Field[]> = {
     { name: "sortOrder", label: "Sort order", kind: "number" },
     { name: "active", label: "Visible on site", kind: "checkbox" },
   ],
+  team: [
+    { name: "name", label: "Full name", kind: "text", required: true, max: 120, placeholder: "e.g. Priya Sharma" },
+    { name: "role", label: "Designation", kind: "text", max: 160, placeholder: "e.g. Head of Engineering" },
+    { name: "image", label: "Photo URL (optional)", kind: "text", max: 500, placeholder: "https://… or /photo.png" },
+    { name: "tone", label: "Colour theme", kind: "select", options: TONES },
+    { name: "message", label: "Bio / message", kind: "textarea", rows: 4, max: 4000 },
+    { name: "quote", label: "Quote (optional)", kind: "textarea", rows: 2, max: 500 },
+    { name: "sortOrder", label: "Sort order", kind: "number" },
+    { name: "active", label: "Visible on site", kind: "checkbox" },
+  ],
 };
 
-const TITLE_MAX: Record<Tab, number> = { services: 120, portfolio: 140, ams: 140, testimonials: 120 };
+const TITLE_MAX: Record<Tab, number> = { services: 120, portfolio: 140, ams: 140, testimonials: 120, team: 120 };
 
 const isUrlOrPath = (v: string) => !v || v.startsWith("/") || /^https?:\/\/.+\..+/.test(v);
 
 function validateForm(tab: Tab, form: Record<string, any>): Record<string, string> {
   const errs: Record<string, string> = {};
-  // Services/portfolio/AMS use "title"; testimonials use "client" as the name.
-  const nameKey = tab === "testimonials" ? "client" : "title";
-  const nameLabel = tab === "testimonials" ? "Client name" : "Title";
+  // Services/portfolio/AMS use "title"; testimonials use "client", team uses "name".
+  const nameKey = tab === "testimonials" ? "client" : tab === "team" ? "name" : "title";
+  const nameLabel = tab === "testimonials" ? "Client name" : tab === "team" ? "Full name" : "Title";
   const name = String(form[nameKey] ?? "").trim();
   if (!name) errs[nameKey] = `${nameLabel} is required.`;
   else if (name.length < 2) errs[nameKey] = `${nameLabel} needs at least 2 characters.`;
@@ -120,6 +131,11 @@ function validateForm(tab: Tab, form: Record<string, any>): Record<string, strin
   if (tab === "portfolio") {
     if (!isUrlOrPath(String(form.image ?? "").trim())) errs.image = "Use a full https:// URL or a site path like /image.png.";
     if (!isUrlOrPath(String(form.link ?? "").trim())) errs.link = "Use a full https:// URL or a site path like /contact.";
+  }
+  if (tab === "team") {
+    const bio = String(form.message ?? "").trim();
+    if (bio.length < 10) errs.message = "Bio needs at least 10 characters.";
+    if (!isUrlOrPath(String(form.image ?? "").trim())) errs.image = "Use a full https:// URL or a site path like /photo.png.";
   }
   const so = String(form.sortOrder ?? "").trim();
   if (so && (!/^\d+$/.test(so) || Number(so) > 9999)) errs.sortOrder = "Order must be a whole number between 0 and 9999.";
@@ -570,7 +586,7 @@ export default function AdminPage() {
           <div className="w-full max-w-sm rounded-3xl bg-white p-6 shadow-2xl" onClick={(e) => e.stopPropagation()}>
             <h3 className="text-lg font-bold text-slate-900">Delete this {meta.singular}?</h3>
             <p className="mt-2 text-sm text-slate-600 break-words">
-              “{deleting.title ?? deleting.client}” will be removed from the website immediately. This cannot be undone.
+              “{deleting.title ?? deleting.client ?? deleting.name}” will be removed from the website immediately. This cannot be undone.
             </p>
             <div className="mt-5 flex gap-3 justify-end">
               <button onClick={() => setDeleting(null)} disabled={deletingBusy} className="rounded-full border border-slate-300 px-5 py-2 text-sm font-semibold text-slate-600 hover:border-slate-400 transition disabled:opacity-50">

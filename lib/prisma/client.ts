@@ -9,7 +9,7 @@
 // every page — but they reset when the server restarts. For permanent storage,
 // point DATABASE_URL at PostgreSQL and migrate (see prisma/schema.prisma).
 
-import { portfolioItems, testimonials } from "../seed-data";
+import { portfolioItems, testimonials, teamMembers } from "../seed-data";
 import { serviceDetails } from "../services-data";
 import { amsFeatures } from "../ams-data";
 
@@ -380,11 +380,117 @@ class PostQuery {
   }
 }
 
+// ---------------------------------------------------------------------------
+// Team members — admin-managed leadership cards (mutable, full CRUD)
+// ---------------------------------------------------------------------------
+type TeamMemberRow = {
+  id: string;
+  name: string;
+  role: string | null;
+  image: string | null;
+  tone: string | null;
+  message: string;
+  quote: string | null;
+  extendedMessage: string | null;
+  vision: string | null;
+  leadership: string | null;
+  closing: string | null;
+  active: boolean;
+  sortOrder: number;
+  createdAt: Date;
+  updatedAt: Date;
+};
+
+const teamMemberRows: TeamMemberRow[] = teamMembers.map((m) => ({
+  id: m.id,
+  name: m.name,
+  role: m.role,
+  image: m.image,
+  tone: m.tone,
+  message: m.message,
+  quote: m.quote,
+  extendedMessage: m.extendedMessage,
+  vision: m.vision,
+  leadership: m.leadership,
+  closing: m.closing,
+  active: m.active,
+  sortOrder: m.sortOrder,
+  createdAt: now(),
+  updatedAt: now(),
+}));
+
+class TeamMemberQuery {
+  async findMany(args?: { where?: { active?: boolean } }): Promise<TeamMemberRow[]> {
+    const rows =
+      args?.where?.active === undefined
+        ? [...teamMemberRows]
+        : teamMemberRows.filter((r) => r.active === args.where!.active);
+    return rows.sort(bySort);
+  }
+  async findUnique(args: { where: { id: string } }): Promise<TeamMemberRow | null> {
+    return teamMemberRows.find((r) => r.id === args.where.id) ?? null;
+  }
+  async create(args: {
+    data: Partial<TeamMemberRow> & { name: string };
+  }): Promise<TeamMemberRow> {
+    const d = args.data;
+    const row: TeamMemberRow = {
+      id: uid("team"),
+      name: String(d.name).trim(),
+      role: d.role?.trim() ? String(d.role) : null,
+      image: d.image?.trim() ? String(d.image) : null,
+      tone: d.tone?.trim() ? String(d.tone) : null,
+      message: String(d.message ?? "").trim(),
+      quote: d.quote?.trim() ? String(d.quote) : null,
+      extendedMessage: d.extendedMessage?.trim() ? String(d.extendedMessage) : null,
+      vision: d.vision?.trim() ? String(d.vision) : null,
+      leadership: d.leadership?.trim() ? String(d.leadership) : null,
+      closing: d.closing?.trim() ? String(d.closing) : null,
+      active: d.active !== false,
+      sortOrder:
+        typeof d.sortOrder === "number" && Number.isFinite(d.sortOrder)
+          ? d.sortOrder
+          : teamMemberRows.length + 1,
+      createdAt: now(),
+      updatedAt: now(),
+    };
+    teamMemberRows.push(row);
+    return row;
+  }
+  async update(args: { where: { id: string }; data: Partial<TeamMemberRow> }): Promise<TeamMemberRow> {
+    const row = teamMemberRows.find((r) => r.id === args.where.id);
+    if (!row) throw new Error(`Team member ${args.where.id} not found`);
+    const d = args.data;
+    if (d.name !== undefined && String(d.name).trim()) row.name = String(d.name).trim();
+    if (d.role !== undefined) row.role = String(d.role).trim() || null;
+    if (d.image !== undefined) row.image = String(d.image).trim() || null;
+    if (d.tone !== undefined) row.tone = String(d.tone).trim() || null;
+    if (d.message !== undefined) row.message = String(d.message);
+    if (d.quote !== undefined) row.quote = String(d.quote).trim() || null;
+    if (d.extendedMessage !== undefined) row.extendedMessage = String(d.extendedMessage).trim() || null;
+    if (d.vision !== undefined) row.vision = String(d.vision).trim() || null;
+    if (d.leadership !== undefined) row.leadership = String(d.leadership).trim() || null;
+    if (d.closing !== undefined) row.closing = String(d.closing).trim() || null;
+    if (d.active !== undefined) row.active = d.active !== false;
+    if (d.sortOrder !== undefined && Number.isFinite(Number(d.sortOrder)))
+      row.sortOrder = Number(d.sortOrder);
+    row.updatedAt = now();
+    return row;
+  }
+  async delete(args: { where: { id: string } }): Promise<TeamMemberRow> {
+    const idx = teamMemberRows.findIndex((r) => r.id === args.where.id);
+    if (idx === -1) throw new Error(`Team member ${args.where.id} not found`);
+    const [removed] = teamMemberRows.splice(idx, 1);
+    return removed;
+  }
+}
+
 export class PrismaClient {
   readonly service = new ServiceQuery();
   readonly portfolio = new PortfolioQuery();
   readonly amsFeature = new AmsFeatureQuery();
   readonly testimonial = new TestimonialQuery();
+  readonly teamMember = new TeamMemberQuery();
   readonly post = new PostQuery();
 
   constructor(options: PrismaClientOptions = {}) {

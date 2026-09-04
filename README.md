@@ -64,7 +64,9 @@ app/                          App Router — routes, layouts, API
    ├─ ams-features/route.ts      GET · POST
    ├─ ams-features/[id]/route.ts GET · PATCH · DELETE
    ├─ testimonials/route.ts      GET · POST
-   └─ testimonials/[id]/route.ts GET · PATCH · DELETE
+   ├─ testimonials/[id]/route.ts GET · PATCH · DELETE
+   ├─ team/route.ts              GET · POST
+   └─ team/[id]/route.ts         GET · PATCH · DELETE
 
 components/                   Server by default; interactive ones use "use client"
 ├─ Navbar · Footer · Hero · Hero3DCanvas · About · Services · Process
@@ -142,6 +144,9 @@ export default { plugins: { "@tailwindcss/postcss": {} } };
 | `GET`    | `/api/testimonials`   | List active testimonials (`?all=1` incl. hidden — admin) |
 | `POST`   | `/api/testimonials`   | Create a testimonial (admin) |
 | `GET`/`PATCH`/`DELETE` | `/api/testimonials/[id]` | Read, update, delete one testimonial (admin) |
+| `GET`    | `/api/team`           | List active team members (`?all=1` incl. hidden — admin) |
+| `POST`   | `/api/team`           | Create a team member (admin) |
+| `GET`/`PATCH`/`DELETE` | `/api/team/[id]` | Read, update, delete one member (admin) |
 | `GET`    | `/api/services`       | Service catalogue              |
 | `GET`    | `/api/testimonials`   | Published testimonials         |
 
