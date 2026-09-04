@@ -5,7 +5,7 @@ import { motion } from "motion/react";
 const solutionDelivered = [
   "Complete Association Management System",
   "Mobile Application (Android & iOS)",
-  "Admin Dashboard",
+  "Management Dashboard",
   "Member Directory",
   "Event Management",
   "Membership Renewal",
@@ -22,7 +22,7 @@ const achievements = [
   },
   {
     title: "Time Saving Operations",
-    desc: "Automated processes reduce repetitive administrative work.",
+    desc: "Automated processes reduce repetitive manual work.",
   },
   {
     title: "Secure & Reliable",

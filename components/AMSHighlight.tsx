@@ -16,7 +16,7 @@ const modules = [
 
 const bullets = [
   "12+ powerful modules across Mobile, Web & Cloud",
-  "Real-time analytics dashboard for administrators",
+  "Real-time analytics dashboard for your team",
   "Push notifications, digital certificates & payment tracking",
   "Enterprise-grade security with cloud-based access",
 ];

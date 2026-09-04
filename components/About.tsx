@@ -76,7 +76,7 @@ export default function About() {
             </h2>
             <p className="mt-2 text-sm font-semibold uppercase tracking-[0.18em] text-indigo-600">Innovate · Build · Elevate</p>
             <p className="mt-5 text-lg leading-relaxed text-slate-600">
-              NextGen MahaTech is a technology-driven software company specializing in Association Management Systems. We help associations and organizations streamline their operations through smart mobile applications, powerful admin dashboards, and cloud-based digital solutions.
+              NextGen MahaTech is a technology-driven software company specializing in Association Management Systems. We help associations and organizations streamline their operations through smart mobile applications, powerful dashboards, and cloud-based digital solutions.
             </p>
             <p className="mt-3 text-base leading-relaxed text-slate-600">
               Our mission is to simplify management, improve communication, and drive digital transformation for associations of every scale.

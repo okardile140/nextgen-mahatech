@@ -87,7 +87,7 @@ export const serviceDetails: ServiceDetail[] = [
     icon: "phone",
     tone: "from-amber-500 to-orange-600",
     features: ["iOS, Android & cross-platform", "Product & UX strategy", "Secure APIs & cloud sync", "App Store / Play Store launch"],
-    deliverables: ["Consumer & enterprise apps", "Field-force & delivery apps", "Dashboards & admin panels", "MVP to production releases"],
+    deliverables: ["Consumer & enterprise apps", "Field-force & delivery apps", "Dashboards & internal tools", "MVP to production releases"],
   },
   {
     slug: "cloud-devops",

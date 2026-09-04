@@ -68,7 +68,7 @@ components/                   Server by default; interactive ones use "use clien
 ├─ services/    Grid · Process · Stack
 ├─ industries/  Grid · Why
 ├─ ams/         Hero · Metrics · Challenges · Benefits · Features · Why
-│               Slogan · DashboardMockup
+│               Slogan
 └─ ui/          AppLink
 
 lib/

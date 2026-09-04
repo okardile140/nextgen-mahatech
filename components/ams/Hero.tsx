@@ -1,7 +1,6 @@
 "use client";
 
 import { motion } from "motion/react";
-import AMSDashboardMockup from "./DashboardMockup";
 
 export default function AMSHero() {
   return (
@@ -22,7 +21,7 @@ export default function AMSHero() {
         }}
       />
       <div className="mx-auto max-w-7xl px-5 md:px-8 relative">
-        <div className="grid lg:grid-cols-[1.15fr_1fr] gap-12 items-center">
+        <div className="mx-auto max-w-4xl text-center">
           <motion.div
             style={{ perspective: 1000 }}
             initial={{ opacity: 0, y: 60, rotateX: 25 }}
@@ -39,13 +38,13 @@ export default function AMSHero() {
               </span>{" "}
               Solution
             </h1>
-            <p className="mt-6 text-lg text-slate-300 leading-relaxed max-w-xl">
+            <p className="mx-auto mt-6 text-lg text-slate-300 leading-relaxed max-w-2xl">
               One platform for complete association management. From members
               and events to renewals, vendors, communications and reports —
               everything is now streamlined in one secure and intelligent
               system.
             </p>
-            <div className="mt-8 flex flex-wrap gap-3">
+            <div className="mt-8 flex flex-wrap justify-center gap-3">
               {["Mobile", "Cloud", "Web", "iOS", "Secure"].map((c) => (
                 <span key={c} className="rounded-full border border-white/15 bg-white/5 px-3.5 py-1 text-xs font-semibold text-slate-200 backdrop-blur">
                   {c}
@@ -53,7 +52,6 @@ export default function AMSHero() {
               ))}
             </div>
           </motion.div>
-          <AMSDashboardMockup />
         </div>
       </div>
     </section>

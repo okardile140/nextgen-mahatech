@@ -38,7 +38,7 @@ export default function VisionMission() {
             NextGen MahaTech is a technology-driven software company
             specialising in Association Management Systems. We help associations
             and organisations streamline their operations through smart mobile
-            applications, powerful admin dashboards, and cloud-based digital
+            applications, powerful dashboards, and cloud-based digital
             solutions.
           </p>
         </Reveal3D>

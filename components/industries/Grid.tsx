@@ -11,7 +11,7 @@ const whyChooseUs = [
   },
   {
     name: "Save Time with Automation",
-    desc: "Automate renewals, reminders, notifications, and routine administrative tasks.",
+    desc: "Automate renewals, reminders, notifications, and routine tasks.",
     icon: "M12 8a4 4 0 100 8 4 4 0 000-8zm0-6v2m0 16v2M4.93 4.93l1.41 1.41m11.32 11.32l1.41 1.41M2 12h2m16 0h2M4.93 19.07l1.41-1.41m11.32-11.32l1.41-1.41",
   },
   {
@@ -50,7 +50,7 @@ const whyChooseUs = [
 const solutionDelivered = [
   "Complete Association Management System",
   "Mobile Application (Android & iOS)",
-  "Admin Dashboard",
+  "Management Dashboard",
   "Member Directory",
   "Event Management",
   "Membership Renewal",
@@ -70,7 +70,7 @@ const keyAchievements = [
 
 const whyNimaChose = [
   "Tailored solution to meet NIMA's unique requirements",
-  "User-friendly system for members and admin",
+  "User-friendly system for members and committees",
   "Improved efficiency in event and membership management",
   "Reliable support and continuous innovation",
   "Trusted technology partner for the long term",
