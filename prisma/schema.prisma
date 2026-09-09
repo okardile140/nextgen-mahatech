@@ -8,15 +8,20 @@
 //      DATABASE_URL="postgresql://USER:PASSWORD@HOST:5432/nextgen_mahatech?schema=public"
 //   2. Run `npx prisma migrate dev --name init`
 //   3. Run `npx prisma generate`
+//
+// Note: `DIRECT_URL` (for connection poolers like Supabase/Neon/PgBouncer) is
+// intentionally NOT referenced here. A single plain `DATABASE_URL` is enough
+// for local development and `prisma db push`. If you use a pooler, point
+// DATABASE_URL at the pooled URL (and, if needed, use `?connection_limit=1`
+// for the CLI) instead of adding a directUrl.
 
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider  = "postgresql"
-  url       = env("DATABASE_URL")
-  directUrl = env("DIRECT_URL")
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
 // ---------------------------------------------------------------------------
