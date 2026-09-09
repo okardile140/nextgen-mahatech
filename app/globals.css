@@ -40,6 +40,31 @@ body {
   animation-delay: -2.5s;
 }
 
+/* Infinite auto-scroll for the testimonials slider */
+@keyframes tm-scroll {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.tm-track {
+  animation: tm-scroll var(--tm-duration, 40s) linear infinite;
+  animation-play-state: running;
+}
+
+.tm-marquee:hover .tm-track {
+  animation-play-state: paused;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tm-track {
+    animation: none;
+  }
+}
+
 /* Smooth scrollbar */
 ::-webkit-scrollbar {
   width: 10px;
